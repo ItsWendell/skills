@@ -32,7 +32,9 @@ Works with Codex, Claude Code, Cursor, Gemini CLI, GitHub Copilot, and [40+ othe
 
 ### Via Codex
 
-Saber includes a Codex plugin manifest at `.codex-plugin/plugin.json` and a local marketplace definition at `.agents/plugins/marketplace.json`. For local testing, point Codex at this checkout as a marketplace and enable the plugin:
+Saber can be installed in Codex as a local plugin. This repository includes both the Codex plugin manifest at `.codex-plugin/plugin.json` and a local marketplace definition at `.agents/plugins/marketplace.json`.
+
+To install Saber in Codex from this checkout, point Codex at the repository as a local marketplace and enable the plugin:
 
 ```toml
 [marketplaces.saber-local]
@@ -45,7 +47,7 @@ enabled = true
 
 Restart Codex after editing `~/.codex/config.toml`, then install or enable Saber from the plugin marketplace UI.
 
-For a home-local setup that mirrors Codex's bundled marketplace layout, symlink this repository under `~/plugins/saber` and use `~/.agents/plugins/marketplace.json` as the marketplace file:
+Alternatively, to mirror Codex's bundled marketplace layout, symlink this repository under `~/plugins/saber` and use `~/.agents/plugins/marketplace.json` as the marketplace file:
 
 ```bash
 mkdir -p ~/plugins ~/.agents/plugins
