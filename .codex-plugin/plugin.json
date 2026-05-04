@@ -39,8 +39,8 @@
       "Research and score these accounts.",
       "Write outreach from account signals."
     ],
-    "brandColor": "#0F766E",
-    "composerIcon": "./assets/icon.svg",
+    "brandColor": "#FBBD05",
+    "composerIcon": "./assets/icon.png",
     "logo": "./assets/logo.svg"
   }
 }
