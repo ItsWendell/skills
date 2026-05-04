@@ -32,7 +32,25 @@ Works with Codex, Claude Code, Cursor, Gemini CLI, GitHub Copilot, and [40+ othe
 
 ### Via Codex
 
-Saber includes a Codex plugin manifest at `.codex-plugin/plugin.json`. For local testing, add this repository as a local plugin source in your Codex plugin marketplace configuration, then install the `saber` plugin from that marketplace.
+Saber includes a Codex plugin manifest at `.codex-plugin/plugin.json` and a local marketplace definition at `.agents/plugins/marketplace.json`. For local testing, point Codex at this checkout as a marketplace and enable the plugin:
+
+```toml
+[marketplaces.saber-local]
+source_type = "local"
+source = "/absolute/path/to/skills"
+
+[plugins."saber@saber-local"]
+enabled = true
+```
+
+Restart Codex after editing `~/.codex/config.toml`, then install or enable Saber from the plugin marketplace UI.
+
+For a home-local setup that mirrors Codex's bundled marketplace layout, symlink this repository under `~/plugins/saber` and use `~/.agents/plugins/marketplace.json` as the marketplace file:
+
+```bash
+mkdir -p ~/plugins ~/.agents/plugins
+ln -sfn /absolute/path/to/skills ~/plugins/saber
+```
 
 The Codex plugin currently exposes the `skills/` library. Skills that benefit from the Saber CLI will detect `saber` on your `PATH` and provide a fallback workflow when it is not installed or authenticated.
 
