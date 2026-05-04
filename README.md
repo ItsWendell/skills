@@ -2,7 +2,7 @@
 
 Saber Skills is an open-source GTM skills library built by [Saber](https://saber.app). It gives revenue and GTM teams 23 skills covering the full outbound motion — from market mapping and ICP extraction to account scoring, personalised outreach, and pipeline review.
 
-Works with Claude Code, Cursor, Gemini CLI, and any agent that supports skills. Most skills work without any special tools. Skills that benefit from the [Saber CLI](https://saber.app) will say so — and every one of them offers a meaningful path without it.
+Works with Codex, Claude Code, Cursor, Gemini CLI, and any agent that supports skills. Most skills work without any special tools. Skills that benefit from the [Saber CLI](https://saber.app) will say so — and every one of them offers a meaningful path without it.
 
 ---
 
@@ -28,7 +28,13 @@ Each skill is a focused prompt that guides your agent through a structured workf
 npx skills add saberapp/skills
 ```
 
-Works with Claude Code, Cursor, Gemini CLI, GitHub Copilot, and [40+ other agents](https://skills.sh).
+Works with Codex, Claude Code, Cursor, Gemini CLI, GitHub Copilot, and [40+ other agents](https://skills.sh).
+
+### Via Codex
+
+Saber includes a Codex plugin manifest at `.codex-plugin/plugin.json`. For local testing, add this repository as a local plugin source in your Codex plugin marketplace configuration, then install the `saber` plugin from that marketplace.
+
+The Codex plugin currently exposes the `skills/` library. Skills that benefit from the Saber CLI will detect `saber` on your `PATH` and provide a fallback workflow when it is not installed or authenticated.
 
 ### Via the Saber Marketplace (Claude Code)
 
@@ -162,7 +168,7 @@ Saber: Subject: saw you're scaling the sales team at Kombo
 
 ## The Saber CLI
 
-Most skills work without the Saber CLI. The CLI unlocks:
+The Codex and Claude plugins both use the same `skills/` library. Most skills work without the Saber CLI. The CLI unlocks:
 
 - **Automated signal runs** — run research questions across hundreds of accounts on a schedule
 - **Contact-level signals** — research individuals by LinkedIn URL

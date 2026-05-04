@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="title">
+  <title id="title">Saber icon</title>
+  <rect width="128" height="128" rx="28" fill="#0F172A"/>
+  <path d="M31 80c10 11 23 17 39 17 18 0 31-7 39-21" fill="none" stroke="#5EEAD4" stroke-width="10" stroke-linecap="round"/>
+  <path d="M30 57c8-17 22-26 41-26 12 0 22 3 31 10" fill="none" stroke="#F8FAFC" stroke-width="10" stroke-linecap="round"/>
+  <path d="M41 64h46" stroke="#FACC15" stroke-width="10" stroke-linecap="round"/>
+</svg>
