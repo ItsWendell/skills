@@ -8,16 +8,16 @@ description: >
 
 # Extract Signal Templates
 
-Use this skill once per org to convert historical ad-hoc signals (signals run via `saber signal --question ...` or via `saber subscription create` without a template) into reusable signal templates. Without this, scoring rules can't reference that historical data — `signal_template_id` is null on those executions.
+Use this skill once per org to convert historical ad-hoc signals (signals run via `saber signal --question ...`, or via subscriptions created without a template attached) into reusable signal templates. Without this, scoring rules can't reference that historical data — `signal_template_id` is null on those executions.
 
-This is a **v1.5 stop-gap**. New signals created via the latest API path already get a template attached automatically. The skill stops finding work once historical ad-hoc data is consolidated.
+This is a **one-shot migration** for the historical backlog. Newly-created signals get templates attached automatically going forward, so the skill stops finding work once the backlog is consolidated.
 
 For scoring concepts and why templates matter for rules, see [`_shared/scoring.md`](../_shared/scoring.md).
 
 ## When to run this skill
 
 - An org has been running ad-hoc signals (or one-off `saber signal --domain ... --question ...` calls) for a while.
-- The user is now setting up scoring (`configure-scoring`) and wants historical signal data to count.
+- The user is now setting up scoring (via `configure-scoring`) and wants historical signal data to count.
 - `saber scoring scores --detailed` shows low `signalCoverage` and the user expected coverage to be near `totalRules`.
 
 If the org only runs templated signals, this skill will report zero clusters and exit — that's the expected end-state.
@@ -116,10 +116,10 @@ The plan is a JSON file the user can edit before applying. Common edits:
 
 - Drop a cluster — remove it from the `clusters` array entirely.
 - Rename or rephrase a `kind: new` cluster — edit `name` and `question`.
-- Move an `executionId` between clusters — usually a sign you should drop and re-propose, but possible.
+- Reassign an `executionId` to a different cluster — only valid if you also remove it from the source cluster. The API rejects with 422 when the same `executionId` appears in two clusters. When in doubt, drop the wrong cluster and re-propose instead.
 
 **Don't touch:**
-- `executionIds` outside of moving them (the API validates these)
+- `executionIds` themselves (the API validates these as UUIDs and against your org)
 - `sampleQuestions` and `notes` — propose-side only, ignored on apply
 
 ## Step 5 — Apply
@@ -154,12 +154,12 @@ Show the user a summary:
 
 - N templates created, M templates extended
 - X executions attached
-- Y candidates remaining (`totalCandidates - processedCandidates` from propose, or run propose again if unsure)
+- To check what's left, re-run `saber template extract propose --type ...`. Empty clusters means the backlog is consolidated.
 
 Then:
 
-- **If scoring isn't set up yet:** route to [`configure-scoring`](../configure-scoring/SKILL.md). The new templates are immediately available as rule targets.
-- **If scoring is already set up:** route to [`manage-scoring`](../manage-scoring/SKILL.md) to add rules pointing at the freshly-extracted templates. Existing rules that already target the matched-existing templates will pick up the back-filled executions on the next compute (auto-trigger doesn't fire on attachment alone — call `saber scoring compute` for affected objects).
+- **If scoring isn't set up yet:** route to `configure-scoring`. The new templates are immediately available as rule targets.
+- **If scoring is already set up:** route to `manage-scoring` to add rules pointing at the freshly-extracted templates. If scores for affected objects don't reflect the back-filled executions within a few minutes, run `saber scoring compute --type ... --object ...` to force a refresh.
 
 ## Troubleshooting
 
@@ -177,6 +177,6 @@ Then:
 ## Related
 
 - [`_shared/scoring.md`](../_shared/scoring.md) — scoring concepts and why templates matter
-- [`configure-scoring`](../configure-scoring/SKILL.md) — natural next step once templates are in place
-- [`manage-scoring`](../manage-scoring/SKILL.md) — add new rules referencing the extracted templates
-- [`create-company-signals`](../create-company-signals/SKILL.md), [`create-contact-signals`](../create-contact-signals/SKILL.md) — going forward, prefer these to ad-hoc signal calls
+- `configure-scoring` — natural next step once templates are in place
+- `manage-scoring` — add new rules referencing the extracted templates
+- `create-company-signals`, `create-contact-signals` — going forward, prefer these to ad-hoc signal calls

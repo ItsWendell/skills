@@ -10,7 +10,7 @@ All notable changes to this project will be documented in this file.
 - `configure-scoring` skill — set up native scoring profiles, rules, and assignments. Bridges the weighted model from `generate-signals` into the platform.
 - `manage-scoring` skill — inspect and tune profiles, edit point values, manage assignments, recompute, and debug score contributions.
 - `skills/_shared/scoring.md` — shared reference doc for scoring concepts (dimensions, profiles, rules, assignments, point-value shapes, auto-trigger behaviour) referenced by every scoring-aware skill.
-- `Score and prioritise` category in the README and `SessionStart` hook.
+- `Scoring and prioritisation` category in the README and `SessionStart` hook.
 
 ### Changed
 

@@ -135,7 +135,7 @@ If the user agrees:
    ```bash
    saber scoring profile list
    ```
-   Filter to `type = company` and show the user. If none exist, route to [`configure-scoring`](../configure-scoring/SKILL.md) to create one, then return here.
+   Filter to `type = company` and show the user. If none exist, route to `configure-scoring` to create one, then return here.
 
 2. Pull the list's domains:
    ```bash

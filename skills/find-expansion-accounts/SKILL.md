@@ -84,7 +84,7 @@ saber scoring rule upsert <profileId> \
   --answer-type boolean --true -30 --false 0
 ```
 
-For unfamiliar signal templates, see [`_shared/scoring.md`](../_shared/scoring.md) for the answer-type → point-values shape contract. For the full first-time setup walkthrough, use [`configure-scoring`](../configure-scoring/SKILL.md) instead of doing it inline here.
+For unfamiliar signal templates, see [`_shared/scoring.md`](../_shared/scoring.md) for the answer-type → point-values shape contract. For the full first-time setup walkthrough, use `configure-scoring` instead of doing it inline here.
 
 ### A4. Bulk-assign the customer list
 
@@ -171,14 +171,14 @@ Use the same buckets as Path A. Flag any account with at-risk evidence regardles
 
 ## Step 3 — Hand off
 
-- **Expand now:** use [`write-outreach`](../write-outreach/SKILL.md) with expansion-focused messaging — reference the specific growth or intent signal as the reason for reaching out
+- **Expand now:** use `write-outreach` with expansion-focused messaging — reference the specific growth or intent signal as the reason for reaching out
 - **Educate:** schedule a value-prop conversation; light-touch nurture; revisit when an urgency signal fires
-- **At risk:** flag for the AM team for a retention check-in; consider [`deal-coaching`](../deal-coaching/SKILL.md) for any open renewal
+- **At risk:** flag for the AM team for a retention check-in; consider `deal-coaching` for any open renewal
 - **Stable:** monitor — auto-trigger will surface them in the next bucket if signals change
 
 ## Related
 
 - [`_shared/scoring.md`](../_shared/scoring.md) — scoring concepts
-- [`configure-scoring`](../configure-scoring/SKILL.md) — full first-time profile setup
-- [`manage-scoring`](../manage-scoring/SKILL.md) — tune the expansion profile after seeing scores
-- [`score-accounts`](../score-accounts/SKILL.md) — generic ranking version of this skill
+- `configure-scoring` — full first-time profile setup
+- `manage-scoring` — tune the expansion profile after seeing scores
+- `score-accounts` — generic ranking version of this skill

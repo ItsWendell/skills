@@ -147,7 +147,7 @@ Run one `subscription create` command per signal. The signal metadata (weight, c
 
 ## Materializing the model with native scoring
 
-The scoring algorithm above is portable — it works on any data source. To make Saber compute fit and urgency automatically as signals run, hand off to [`configure-scoring`](../configure-scoring/SKILL.md). It translates this signal set into a scoring profile.
+The scoring algorithm above is portable — it works on any data source. To make Saber compute fit and urgency automatically as signals run, hand off to `configure-scoring`. It translates this signal set into a scoring profile.
 
 Default mapping:
 
@@ -175,5 +175,5 @@ Before finalising:
 ## Next steps
 
 - Use `create-company-signals` to activate the signals against a Saber list
-- Use [`configure-scoring`](../configure-scoring/SKILL.md) to materialize this weighted model as a native scoring profile (fit + urgency auto-compute as signals fire)
+- Use `configure-scoring` to materialize this weighted model as a native scoring profile (fit + urgency auto-compute as signals fire)
 - After signals run, use `score-accounts` to rank accounts by current scores

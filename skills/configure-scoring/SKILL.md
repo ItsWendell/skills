@@ -43,7 +43,7 @@ Before writing rules, collect:
 1. **Signal templates already in Saber.** Rules are keyed on signal template IDs — without templates there's nothing to point at. Three states to handle:
    - **No templates and no signals** → route to `signal-discovery` then `create-company-signals` / `create-contact-signals` first.
    - **Templates exist** → list them and decide which to include in the profile.
-   - **Lots of historical ad-hoc signal data, few templates** → route to [`extract-signal-templates`](../extract-signal-templates/SKILL.md) first to consolidate ad-hoc executions into reusable templates. Without this, historical signal data won't contribute to scores.
+   - **Lots of historical ad-hoc signal data, few templates** → route to `extract-signal-templates` first to consolidate ad-hoc executions into reusable templates. Without this, historical signal data won't contribute to scores.
 2. **The weighted model from `generate-signals`** (categories + weights), or whatever the user has informally.
 
 ## Step 4 — Translate signals to rules

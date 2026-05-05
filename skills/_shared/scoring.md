@@ -36,7 +36,7 @@ saber scoring profile delete <profileId>   # cascades: rules, assignments, score
 
 ## Rule
 
-A rule maps one **signal template** to a **dimension** with **typed point values**. Rules are keyed on template IDs — ad-hoc signals (those run via `saber signal --question ...` or `saber subscription create` without a template) have no template attached, so historical ad-hoc executions are invisible to rules until they're consolidated. See [`extract-signal-templates`](../extract-signal-templates/SKILL.md) for the one-shot migration flow that converts historical ad-hoc signals into reusable templates.
+A rule maps one **signal template** to a **dimension** with **typed point values**. Rules are keyed on template IDs — ad-hoc signals (those run via `saber signal --question ...`, or via subscriptions created without a template attached) are invisible to rules until they're consolidated. See `extract-signal-templates` for the one-shot migration flow that converts historical ad-hoc signals into reusable templates.
 
 Point-values shape must match the signal template's answer type; the server returns 422 `INVALID_POINT_VALUES` on mismatch rather than failing silently at compute.
 
@@ -77,14 +77,19 @@ Bulk is idempotent — duplicate `(profile, object)` pairs are skipped silently 
 
 ## Compute
 
-Compute runs asynchronously via Temporal. Two ways scores recompute:
+Compute runs asynchronously via Temporal. Scores recompute automatically on:
 
-1. **Auto-trigger (v1.5)** — when a signal underlying any rule completes, every object assigned to a profile that uses that signal recomputes automatically. **You usually do not need to call compute manually.**
-2. **Manual** — for an immediate refresh independent of signal runs:
-   ```bash
-   saber scoring compute --type company --object acme.com --object stripe.com
-   ```
-   Idempotent — duplicate triggers attach to the running workflow. Returns 202 with `{queued, failed}`. A `failed > 0` count means some object dispatches errored; retry to pick those up.
+- **Signal completion** — a signal underlying any rule finishes; every object assigned to a profile that uses that signal recomputes.
+- **Rule upsert or delete** — every object assigned to the affected profile recomputes.
+- **Assignment create** — a single compute fires for the new (profile, object) pair.
+
+You usually do not need to call compute manually. For an immediate refresh independent of those triggers (e.g. just before a meeting, or after out-of-band signal data changes):
+
+```bash
+saber scoring compute --type company --object acme.com --object stripe.com
+```
+
+Idempotent — duplicate triggers attach to the running workflow. Returns 202 with `{queued, failed}`. A `failed > 0` count means some object dispatches errored; retry to pick those up.
 
 ## Reading scores
 

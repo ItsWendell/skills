@@ -29,7 +29,7 @@ saber scoring profile list
 
 If a relevant company list and at least one company-scoped scoring profile exist, take **Path A**.
 
-If a list exists but no scoring profile is assigned to its accounts, route to [`configure-scoring`](../configure-scoring/SKILL.md) first, then return here.
+If a list exists but no scoring profile is assigned to its accounts, route to `configure-scoring` first, then return here.
 
 **If not installed:** take **Path B** with whatever signal data the user has.
 
@@ -161,11 +161,11 @@ Same output structure as Path A's table, but with one combined score column inst
 - **Watch list:** re-read scores in 2–4 weeks; auto-trigger will have updated them as signals run
 - **Low scorers:** pause or remove from active list; revisit if a trigger fires
 - Use `deal-coaching` on any high-priority account already in pipeline
-- Use [`manage-scoring`](../manage-scoring/SKILL.md) to tune rules if the rankings don't match your gut
+- Use `manage-scoring` to tune rules if the rankings don't match your gut
 
 ## Related
 
 - [`_shared/scoring.md`](../_shared/scoring.md) — concepts and CLI reference
-- [`configure-scoring`](../configure-scoring/SKILL.md) — first-time scoring setup
-- [`manage-scoring`](../manage-scoring/SKILL.md) — tune rules and assignments
-- [`qualify-inbound`](../qualify-inbound/SKILL.md) — single-lead version of this flow
+- `configure-scoring` — first-time scoring setup
+- `manage-scoring` — tune rules and assignments
+- `qualify-inbound` — single-lead version of this flow

@@ -29,7 +29,7 @@ saber scoring assignment list --type company --object <domain>
 
 - **At least one company scoring profile assigned to this domain → Path A** (read native scores).
 - **A profile exists but isn't assigned to this domain → Path A**, with one extra step: assign first.
-- **No company scoring profile at all → Path A is unavailable.** Either route to [`configure-scoring`](../configure-scoring/SKILL.md) (best one-time investment) or take **Path B**.
+- **No company scoring profile at all → Path A is unavailable.** Either route to `configure-scoring` (best one-time investment) or take **Path B**.
 - **No CLI → Path B**.
 
 ---
@@ -163,6 +163,6 @@ Count positive signals; weight by the user's stated priorities. Apply disqualifi
 ## Related
 
 - [`_shared/scoring.md`](../_shared/scoring.md) — scoring concepts and CLI reference
-- [`configure-scoring`](../configure-scoring/SKILL.md) — set up scoring once, qualify many
-- [`research-account`](../research-account/SKILL.md) — deeper context for borderline leads
-- [`write-outreach`](../write-outreach/SKILL.md) — turn a hot qualification into a message
+- `configure-scoring` — set up scoring once, qualify many
+- `research-account` — deeper context for borderline leads
+- `write-outreach` — turn a hot qualification into a message

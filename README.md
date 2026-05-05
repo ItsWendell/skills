@@ -80,7 +80,7 @@ Saber Skills activates on the next session start. All available skills are liste
 | `research-account` | Builds a full account brief — signals, hiring, funding, news, tech stack, and a call prep summary. |
 | `qualify-inbound` | Qualifies an inbound lead from native fit + urgency scores when Saber is available; falls back to manual scoring otherwise. |
 
-### Score and prioritise
+### Scoring and prioritisation
 
 | Skill | What it does |
 |---|---|
@@ -159,6 +159,7 @@ You:     score-accounts
 Saber: Reading native scores for 340 accounts (ICP scoring profile)...
 
          High priority (combined ≥ 70): 12 accounts
+         (Δ shows score change since the previous compute.)
          1. Kombo — fit 86 / urgency 82 (Δ +8) — New CTO, hiring 6 SDRs
          2. Liro  — fit 78 / urgency 80 (Δ +4) — Series B 3 months ago, HubSpot migration
 

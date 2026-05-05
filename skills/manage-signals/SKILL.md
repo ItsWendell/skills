@@ -8,7 +8,7 @@ description: >
 
 Use this skill to get an overview of your active signal subscriptions and manage them — pause ones that aren't useful, resume paused ones, adjust frequency, or clean up old subscriptions.
 
-Scoring lives in a separate skill — use [`manage-scoring`](../manage-scoring/SKILL.md) to inspect or tune scoring profiles, rules, and assignments.
+Scoring lives in a separate skill — use `manage-scoring` to inspect or tune scoring profiles, rules, and assignments.
 
 ## Saber CLI check
 
@@ -91,12 +91,12 @@ Highlight subscriptions where:
 - No companies are positive (signal may need rewording or the list may need refreshing)
 - The last run was more than 30 days ago (may be stale)
 
-Note: scoring profiles assigned to objects in this list **auto-recompute** when these subscriptions complete. To inspect or recompute scores manually, use [`manage-scoring`](../manage-scoring/SKILL.md).
+Note: scoring profiles assigned to objects in this list **auto-recompute** when these subscriptions complete. To inspect or recompute scores manually, use `manage-scoring`.
 
 Suggest next steps based on the review, such as using `score-accounts` to rank accounts by combined signal strength.
 
 ## Related
 
-- [`manage-scoring`](../manage-scoring/SKILL.md) — manage scoring profiles, rules, assignments
-- [`score-accounts`](../score-accounts/SKILL.md) — rank a list by current scores
-- [`configure-scoring`](../configure-scoring/SKILL.md) — first-time scoring setup
+- `manage-scoring` — manage scoring profiles, rules, assignments
+- `score-accounts` — rank a list by current scores
+- `configure-scoring` — first-time scoring setup
