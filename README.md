@@ -1,6 +1,6 @@
 # Saber Skills
 
-Saber Skills is an open-source GTM skills library built by [Saber](https://saber.app). It gives revenue and GTM teams 25 skills covering the full outbound motion — from market mapping and ICP extraction to native fit + urgency scoring, personalised outreach, and pipeline review.
+Saber Skills is an open-source GTM skills library built by [Saber](https://saber.app). It gives revenue and GTM teams 26 skills covering the full outbound motion — from market mapping and ICP extraction to native fit + urgency scoring, personalised outreach, and pipeline review.
 
 Works with Claude Code, Cursor, Gemini CLI, and any agent that supports skills. Most skills work without any special tools. Skills that benefit from the [Saber CLI](https://saber.app) will say so — and every one of them offers a meaningful path without it.
 
@@ -84,6 +84,7 @@ Saber Skills activates on the next session start. All available skills are liste
 
 | Skill | What it does |
 |---|---|
+| `extract-signal-templates` | Clusters historical ad-hoc signals into reusable templates so they can be referenced by scoring rules. One-shot migration. |
 | `configure-scoring` | Sets up native scoring — profile, rules, assignments. Bridges the weighted model from `generate-signals` into the platform. |
 | `manage-scoring` | Inspects and tunes scoring — list profiles and rules, edit point values, manage assignments, recompute, debug score contributions. |
 | `score-accounts` | Ranks a list by current fit + urgency scores via the Saber CLI. Falls back to client-side weighted scoring for Apollo, HubSpot, or pasted data. |

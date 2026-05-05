@@ -36,7 +36,9 @@ saber scoring profile delete <profileId>   # cascades: rules, assignments, score
 
 ## Rule
 
-A rule maps one **signal template** to a **dimension** with **typed point values**. Point-values shape must match the signal template's answer type; the server returns 422 `INVALID_POINT_VALUES` on mismatch rather than failing silently at compute.
+A rule maps one **signal template** to a **dimension** with **typed point values**. Rules are keyed on template IDs — ad-hoc signals (those run via `saber signal --question ...` or `saber subscription create` without a template) have no template attached, so historical ad-hoc executions are invisible to rules until they're consolidated. See [`extract-signal-templates`](../extract-signal-templates/SKILL.md) for the one-shot migration flow that converts historical ad-hoc signals into reusable templates.
+
+Point-values shape must match the signal template's answer type; the server returns 422 `INVALID_POINT_VALUES` on mismatch rather than failing silently at compute.
 
 | Signal answer type | Point-values shape | CLI flags |
 |---|---|---|
@@ -147,6 +149,7 @@ saber scoring scores --type company --object acme.com --detailed
 
 ## Related skills
 
+- `extract-signal-templates` — consolidate historical ad-hoc signals into templates so they can be referenced by rules (one-shot migration)
 - `configure-scoring` — first-time setup of a profile and its rules
 - `manage-scoring` — inspect, tune, recompute, clean up
 - `score-accounts` — rank a list by current scores
