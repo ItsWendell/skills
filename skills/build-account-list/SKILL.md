@@ -123,6 +123,33 @@ Present the 10 results and ask: do the signals look accurate? Any false positive
 
 If approved signals are available in conversation context, offer to run them using `create-company-signals`.
 
+## Step 6 — Bulk-assign a scoring profile (optional, Saber CLI only)
+
+After signals are activated, offer to wire up native scoring for the list so fit + urgency compute automatically as signals fire. Skip this step if the list is empty.
+
+> "Want this list to be scored automatically? I can assign a scoring profile to every account on it."
+
+If the user agrees:
+
+1. List existing company-scoped scoring profiles:
+   ```bash
+   saber scoring profile list
+   ```
+   Filter to `type = company` and show the user. If none exist, route to [`configure-scoring`](../configure-scoring/SKILL.md) to create one, then return here.
+
+2. Pull the list's domains:
+   ```bash
+   saber list company companies <listId>
+   ```
+
+3. Bulk-assign — one call, repeat `--object` per domain:
+   ```bash
+   saber scoring assignment bulk --profile <profileId> --type company \
+     --object acme.com --object stripe.com ...
+   ```
+
+Compute kicks off automatically when assignments are created. From this point on, scores stay fresh via auto-trigger as signals complete — no recurring action needed. See [`_shared/scoring.md`](../_shared/scoring.md) for details.
+
 ## Key Saber commands
 
 ```bash
@@ -131,4 +158,6 @@ saber list company create --name "<name>" [--industry] [--country] [--size] [--t
 saber list company import --name "<name>" --property <property> --operator EQ --value "<value>"
 saber list company get <listId>
 saber list company list
+saber scoring profile list
+saber scoring assignment bulk --profile <id> --type company --object <domain> ...
 ```

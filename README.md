@@ -1,6 +1,6 @@
 # Saber Skills
 
-Saber Skills is an open-source GTM skills library built by [Saber](https://saber.app). It gives revenue and GTM teams 23 skills covering the full outbound motion — from market mapping and ICP extraction to account scoring, personalised outreach, and pipeline review.
+Saber Skills is an open-source GTM skills library built by [Saber](https://saber.app). It gives revenue and GTM teams 25 skills covering the full outbound motion — from market mapping and ICP extraction to native fit + urgency scoring, personalised outreach, and pipeline review.
 
 Works with Claude Code, Cursor, Gemini CLI, and any agent that supports skills. Most skills work without any special tools. Skills that benefit from the [Saber CLI](https://saber.app) will say so — and every one of them offers a meaningful path without it.
 
@@ -78,8 +78,15 @@ Saber Skills activates on the next session start. All available skills are liste
 | Skill | What it does |
 |---|---|
 | `research-account` | Builds a full account brief — signals, hiring, funding, news, tech stack, and a call prep summary. |
-| `qualify-inbound` | Scores an inbound lead by running signals against their domain. Returns High / Medium / Low with reasoning. |
-| `score-accounts` | Ranks accounts by signal strength using the weighted scoring model from `generate-signals`. Works with Saber results, Apollo exports, or any pasted data. |
+| `qualify-inbound` | Qualifies an inbound lead from native fit + urgency scores when Saber is available; falls back to manual scoring otherwise. |
+
+### Score and prioritise
+
+| Skill | What it does |
+|---|---|
+| `configure-scoring` | Sets up native scoring — profile, rules, assignments. Bridges the weighted model from `generate-signals` into the platform. |
+| `manage-scoring` | Inspects and tunes scoring — list profiles and rules, edit point values, manage assignments, recompute, debug score contributions. |
+| `score-accounts` | Ranks a list by current fit + urgency scores via the Saber CLI. Falls back to client-side weighted scoring for Apollo, HubSpot, or pasted data. |
 
 ### Signal activation
 
@@ -130,6 +137,14 @@ Saber: Loading org context...
          Generating signals...
          14 signals across icp_fit / urgency / buying_signal — confirmed.
 
+You:     configure-scoring
+
+Saber: Translating the 14-signal model into a native scoring profile...
+         Profile: ICP scoring (company)
+         Rules: 9 in fit, 5 in urgency
+         Bulk-assigned to 340 accounts on 'EMEA SaaS'.
+         Auto-trigger is on — scores will recompute as signals fire.
+
 You:     build-account-list
 
 Saber: No Saber CLI detected. What prospecting tools do you have available?
@@ -140,14 +155,11 @@ Saber: No Saber CLI detected. What prospecting tools do you have available?
 
 You:     score-accounts
 
-Saber: Paste your signal data or describe what you know about these accounts.
-         → User: [pastes Apollo enrichment with funding, hiring, tech stack data]
+Saber: Reading native scores for 340 accounts (ICP scoring profile)...
 
-         Scoring 340 accounts using weighted model...
-
-         High priority (70+): 12 accounts
-         1. Kombo — score 84 — New CTO, hiring 6 SDRs, no RevOps function
-         2. Liro  — score 79 — Series B 3 months ago, HubSpot migration
+         High priority (combined ≥ 70): 12 accounts
+         1. Kombo — fit 86 / urgency 82 (Δ +8) — New CTO, hiring 6 SDRs
+         2. Liro  — fit 78 / urgency 80 (Δ +4) — Series B 3 months ago, HubSpot migration
 
 You:     write-outreach   [for Kombo]
 

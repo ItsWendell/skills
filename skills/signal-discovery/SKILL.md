@@ -70,4 +70,5 @@ Once signals are approved, tell the user their next steps:
 - To build a target list: use `build-account-list` or `build-contact-list`
 - To activate company signals: use `create-company-signals`
 - To activate contact signals: use `create-contact-signals`
-- After signals run: use `score-accounts` to rank accounts using the weighted scoring model
+- To turn the weighted model into native fit + urgency scoring: use `configure-scoring` (translates categories to dimensions and weights to point values)
+- After signals run: use `score-accounts` to rank accounts by current fit + urgency scores
