@@ -143,7 +143,21 @@ saber subscription create \
   --frequency weekly
 ```
 
-Run one `subscription create` command per signal. The signal metadata (weight, category, interpretation rules) should be kept in conversation context for use by `score-accounts`.
+Run one `subscription create` command per signal. The signal metadata (weight, category, interpretation rules) should be kept in conversation context — both `configure-scoring` (to materialize the model into native scoring rules) and `score-accounts` (when falling back to client-side ranking) consume it.
+
+## Materializing the model with native scoring
+
+The scoring algorithm above is portable — it works on any data source. To make Saber compute fit and urgency automatically as signals run, hand off to `configure-scoring`. It translates this signal set into a scoring profile.
+
+Default mapping:
+
+| Category here | `configure-scoring` dimension |
+|---|---|
+| `icp_fit` | `fit` |
+| `buying_signal` | `urgency` |
+| `urgency` | `urgency` |
+
+Default point values: `points = weight × 10`. Disqualifiers go in `fit` with strongly negative `false` points. See [`_shared/scoring.md`](../_shared/scoring.md) for the full answer-type → point-values shape contract.
 
 ## Quality checks
 
@@ -161,4 +175,5 @@ Before finalising:
 ## Next steps
 
 - Use `create-company-signals` to activate the signals against a Saber list
-- After signals run, use `score-accounts` to rank accounts using the weighted scoring model above
+- Use `configure-scoring` to materialize this weighted model as a native scoring profile (fit + urgency auto-compute as signals fire)
+- After signals run, use `score-accounts` to rank accounts by current scores

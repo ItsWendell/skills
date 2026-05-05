@@ -1,137 +1,184 @@
 ---
 name: find-expansion-accounts
 description: >
-  Identify existing customers showing buying signals for upsell or cross-sell opportunities.
-  Works with Saber, HubSpot, or any available customer data source.
+  Identify existing customers showing buying signals for upsell or cross-sell using
+  a dedicated expansion scoring profile. Falls back to manual signal counting when
+  the Saber CLI isn't available.
 ---
 
 # Find Expansion Accounts
 
-Use this skill to surface upsell and cross-sell opportunities within your existing customer base
-by running expansion-focused signals against a list of current accounts.
+Use this skill to surface upsell and cross-sell opportunities within your customer base. The right setup is a **separate scoring profile** tuned for expansion (different signals, different fit definition than new business), assigned to your customer list.
 
-Works with or without the Saber CLI — the HubSpot MCP or a manual customer list are equally valid starting points.
+For scoring concepts, see [`_shared/scoring.md`](../_shared/scoring.md).
 
 ## Step 1 — Get the customer list
 
 Ask the user how their customer data is available:
 
----
-
 ### Path A — Saber CLI
-
-Run `saber --help` to confirm the CLI is installed.
 
 ```bash
 saber list company list
 ```
 
-Ask which list contains current customers. If a customer list doesn't exist yet, offer to create one.
-
----
+Ask which list contains current customers. If a customer list doesn't exist yet, offer to create one (a manually-imported list is fine — `saber list company import` or filter by a HubSpot lifecycle property).
 
 ### Path B — HubSpot MCP (if available)
 
-Pull customers directly using the HubSpot MCP:
+Pull customers via the HubSpot MCP:
 ```
 Fetch HubSpot companies where lifecycle_stage = "customer"
 ```
 
-Return company name and domain for each. If Saber CLI is available, create a Saber list from these domains. If not, work with the HubSpot data directly.
-
----
+If the Saber CLI is also available, import the result into a Saber list to use Path A. Otherwise work with HubSpot data directly under Path C.
 
 ### Path C — Manual list
 
-Ask the user to provide a list of customer domains or company names. Work with that list directly.
+Ask for a list of customer domains. Work with that list directly under the manual fallback below.
 
 ---
 
-## Step 2 — Define expansion signals
+## Path A — Expansion scoring profile (Saber CLI)
 
-Expansion signals indicate readiness to buy more or expand into adjacent products/seats.
-Work with the user to define 3–5 expansion-specific signal questions.
+### A1. Check for an existing expansion profile
 
-**Growth signals** (they're scaling and may need more):
-- "Is this company actively hiring in roles that would use our product?"
-- "Has this company raised funding in the last 6 months?"
-- "Is this company expanding into new markets or geographies?"
-
-**Problem signals** (they're experiencing pain the expansion product solves):
-- "Is this company posting about [specific challenge your expansion product addresses]?"
-- "Is this company hiring for a role that suggests they're outgrowing their current setup?"
-
-**Intent signals** (they're researching adjacent solutions):
-- "Is this company evaluating or recently adopted [complementary tool]?"
-
-**At-risk signals** (if the goal is retention, not just expansion):
-- "Is this company reducing headcount or announcing layoffs?"
-- "Is the original buyer at this company still in their role?"
-
-If signal definitions already exist in conversation context, check whether they're relevant for expansion or whether new ones are needed.
-
-## Step 3 — Run expansion signals
-
-### With Saber CLI
-
-Check credits first:
 ```bash
-saber credits
+saber scoring profile list
 ```
-Tell the user: "Running [N] signals against [M] accounts will use [N×M] credits." Ask them to confirm.
 
-Then create subscriptions:
+Look for a `type: company` profile clearly named for expansion (e.g. `Expansion`, `Upsell`, `Existing customers`). If one exists, jump to A4. Otherwise create one.
+
+### A2. Create the expansion profile
+
 ```bash
-saber subscription create \
-  --list <listId> \
-  --name "<expansion signal name>" \
-  --question "<expansion signal question>" \
-  --answer-type boolean \
-  --frequency monthly \
-  --run-once
+saber scoring profile create --type company \
+  --name "Expansion (company)" \
+  --description "Upsell / cross-sell signals against existing customers"
 ```
 
-Create one subscription per signal question. Use `--run-once` to get results immediately.
+Capture the `profileId`.
 
-### Without Saber CLI
+### A3. Add expansion rules
 
-For each customer and each expansion signal question, research manually or via available tools:
-- Web search for recent news (funding, hiring, expansion, layoffs)
-- HubSpot MCP: check custom properties or notes for relevant activity
-- LinkedIn: check company updates and job postings
+For each expansion signal in scope, upsert a rule. Default category → dimension mapping:
 
-Record findings in a structured table:
+| Signal type | Dimension | Reasoning |
+|---|---|---|
+| **Growth** — hiring, funding, geographic expansion | `urgency` | Time-sensitive triggers |
+| **Problem** — they have the pain the expansion product solves | `fit` | Persistent need, not a moment in time |
+| **Intent** — evaluating an adjacent or complementary tool | `urgency` | Active buying window |
+| **At-risk** — layoffs, original buyer churned, declining usage | `urgency` (negative points) | Retention flag, not expansion |
 
+If signal templates already exist (from `create-company-signals`), reuse them. Otherwise create them first via `create-company-signals` and return.
+
+```bash
+# Growth example (boolean)
+saber scoring rule upsert <profileId> \
+  --signal-template <hiringSigId> --dimension urgency \
+  --answer-type boolean --true 20 --false 0
+
+# At-risk example — negative points
+saber scoring rule upsert <profileId> \
+  --signal-template <layoffsSigId> --dimension urgency \
+  --answer-type boolean --true -30 --false 0
 ```
-| Company | Growth signal | Problem signal | Intent signal | At-risk signal |
-|---------|--------------|----------------|---------------|----------------|
-| Acme    | ✓ Hiring     | —              | ✓ Eval HubSpot | —             |
+
+For unfamiliar signal templates, see [`_shared/scoring.md`](../_shared/scoring.md) for the answer-type → point-values shape contract. For the full first-time setup walkthrough, use `configure-scoring` instead of doing it inline here.
+
+### A4. Bulk-assign the customer list
+
+```bash
+saber list company companies <customerListId>
+# extract domains, then:
+saber scoring assignment bulk --profile <profileId> --type company \
+  --object acme.com --object stripe.com ...
 ```
 
-## Step 4 — Score and present expansion opportunities
+Compute kicks off automatically; auto-trigger keeps scores fresh as expansion signals run.
+
+### A5. Read and bucket
+
+```bash
+saber scoring scores --type company \
+  --object acme.com --object stripe.com [...] --detailed
+```
+
+Bucket the customer list into:
+
+| Bucket | Definition | Action |
+|---|---|---|
+| **Expand now** | `urgency ≥ 60 AND fit ≥ 50` | Reach out — reference the strongest growth/intent signal |
+| **Educate** | `fit ≥ 60 AND urgency < 60` | Persistent need but no live trigger — content / EBR / proactive value-prop conversation |
+| **At risk** | Any rule contributing strongly negative points to `urgency` | Flag to AM — proactive check-in, not expansion outreach |
+| **Stable** | None of the above fire | Monitor only |
+
+Present:
 
 ```
 ## Expansion Opportunities — [Customer List Name]
 
-### High priority (2+ positive signals)
-| Company | Domain | Signals | Top signal |
-|---------|--------|---------|------------|
-| Acme Corp | acme.com | 3/4 | Recently funded, hiring in sales |
+### Expand now ([N] accounts)
+| Company | Domain | Fit | Urgency | Top trigger |
+|---|---|---|---|---|
+| Acme Corp | acme.com | 78 | 84 | Series B 2 months ago, hiring 6 SDRs |
 
-### Watch list (1 positive signal)
-| Company | Domain | Signal |
-|---------|--------|--------|
-| Beta Inc | beta.io | Expanding into EMEA |
+### Educate ([N] accounts)
+| Company | Domain | Fit | Urgency | Persistent pain |
+|---|---|---|---|---|
+| Beta Inc | beta.io | 72 | 32 | Manual reporting still |
 
-### At-risk accounts
+### At risk ([N] accounts)
 | Company | Domain | Risk signal |
-|---------|--------|-------------|
-| Gamma Ltd | gamma.io | Reducing headcount |
+|---|---|---|
+| Gamma Ltd | gamma.io | Layoffs announced last month |
+
+### Stable ([N] accounts)
+[count only — list omitted unless requested]
 ```
 
-## Step 5 — Suggest next steps
+---
 
-- **High priority accounts:** use `write-outreach` with expansion-focused messaging — reference the specific growth signal as the reason for reaching out
-- **Watch list accounts:** re-run signals in 4 weeks to track movement
-- **At-risk accounts:** flag for the account management team and consider a proactive check-in
-- Use `deal-coaching` for any expansion account already in a conversation
+## Path B / C — Manual expansion review (no Saber CLI)
+
+Used when the CLI isn't available. Less calibrated than Path A but still useful.
+
+### B1. Define expansion signals
+
+Work with the user on 3–5 questions covering:
+
+- **Growth** — "Is this customer actively hiring in roles that would use our product?", "Have they raised funding in the last 6 months?"
+- **Problem** — "Are they posting about [the challenge our expansion product addresses]?"
+- **Intent** — "Are they evaluating [complementary tool]?"
+- **At-risk** — "Are they reducing headcount?", "Is the original buyer still in role?"
+
+### B2. Research per customer
+
+For each customer × each question, research using web search, LinkedIn, HubSpot MCP notes/properties, news.
+
+### B3. Bucket
+
+Use the same buckets as Path A. Flag any account with at-risk evidence regardless of expansion signals.
+
+```
+| Company | Growth | Problem | Intent | At-risk | Bucket |
+|---|---|---|---|---|---|
+| Acme | Yes | — | Yes | — | Expand now |
+| Gamma | — | — | — | Yes | At risk |
+```
+
+---
+
+## Step 3 — Hand off
+
+- **Expand now:** use `write-outreach` with expansion-focused messaging — reference the specific growth or intent signal as the reason for reaching out
+- **Educate:** schedule a value-prop conversation; light-touch nurture; revisit when an urgency signal fires
+- **At risk:** flag for the AM team for a retention check-in; consider `deal-coaching` for any open renewal
+- **Stable:** monitor — auto-trigger will surface them in the next bucket if signals change
+
+## Related
+
+- [`_shared/scoring.md`](../_shared/scoring.md) — scoring concepts
+- `configure-scoring` — full first-time profile setup
+- `manage-scoring` — tune the expansion profile after seeing scores
+- `score-accounts` — generic ranking version of this skill

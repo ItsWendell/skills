@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.0] - 2026-05-05
+
+### Added
+
+- `extract-signal-templates` skill — one-shot migration that clusters historical ad-hoc signal executions into reusable templates so they become scoreable. Wraps `saber template extract propose | apply`.
+- `configure-scoring` skill — set up native scoring profiles, rules, and assignments. Bridges the weighted model from `generate-signals` into the platform.
+- `manage-scoring` skill — inspect and tune profiles, edit point values, manage assignments, recompute, and debug score contributions.
+- `skills/_shared/scoring.md` — shared reference doc for scoring concepts (dimensions, profiles, rules, assignments, point-value shapes, auto-trigger behaviour) referenced by every scoring-aware skill.
+- `Scoring and prioritisation` category in the README and `SessionStart` hook.
+
+### Changed
+
+- `score-accounts` — Path A now reads native fit + urgency scores via `saber scoring scores` instead of computing client-side. Path B retains the weighted model fallback for non-Saber data.
+- `qualify-inbound` — surfaces native fit + urgency separately with a tier matrix (Hot / Right fit, slow timing / Reactive / Possible fit / Not a fit) when scoring is configured. Manual qualification preserved as a fallback.
+- `find-expansion-accounts` — uses a dedicated expansion scoring profile (growth / problem / intent / at-risk → fit + urgency mapping) and reads native scores; manual fallback retained.
+- `build-account-list` — adds an optional bulk-assign step after list creation so signals flowing into the list also flow into scores.
+- `signal-discovery` and `generate-signals` — hand off to `configure-scoring` to materialize the weighted model as native scoring rules.
+- `manage-signals` — cross-links to `manage-scoring` and notes that scores auto-recompute when signals complete.
+
 ## [0.1.0] - 2026-04-10
 
 ### Added
