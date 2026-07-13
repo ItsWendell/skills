@@ -35,6 +35,56 @@ When generating signals, look for companies that *currently have the problem* �
 | "Reporting takes days to produce" | Companies using spreadsheets for reporting |
 | "Rapid headcount growth overwhelming ops" | Companies with 30%+ headcount growth in 12 months |
 
+## Prebuilt signals — know they exist, reach for them only when they answer the question
+
+**The signal set is driven by the ICP and the pain points, not by what happens to be
+prebuilt.** Design the signals the user actually needs first. Only then check whether a
+prebuilt signal already answers one of them exactly.
+
+Saber ships five prebuilt signals, each covering one commodity fact:
+
+| Prebuilt signal | Answers exactly |
+|---|---|
+| `funding` | Funding history and recent rounds |
+| `mna` | M&A activity — as acquirer or as target |
+| `tech` | Technology stack, by category (`erp`, `crm`) or by named product |
+| `open-jobs` | Open roles and hiring activity |
+| `firmographics` | Size, HQ, industry, and other company fundamentals |
+
+**Use a prebuilt signal only when the question you designed IS that commodity fact,** with no
+qualification logic layered on top. "Has this company raised recently?" is `funding`. Anything
+with a threshold, a window, a role filter, or a judgement call attached is a custom signal —
+the prebuilt one cannot express it, and forcing the question to fit the prebuilt shape quietly
+throws away the qualification criteria that make the signal worth running.
+
+Some worked examples:
+
+| The signal the user needs | Use |
+|---|---|
+| "Has this company raised a round recently?" | `funding` — that is exactly the fact |
+| "Raised a Series B+ in the last 6 months **and** has no VP Sales yet" | **custom** — a threshold plus a second condition |
+| "What CRM do they run?" | `tech --category crm` |
+| "Do they run a CRM their data team has clearly outgrown?" | **custom** — the judgement is the signal |
+| "Are they hiring?" | `open-jobs` |
+| "Hiring RevOps or Sales Ops specifically, in EMEA" | **custom** — a role and geography filter |
+
+**Most of a good signal set is custom.** Prebuilt signals cover the facts everybody needs and
+nobody differentiates on; the signals that actually qualify an account — your pain points, your
+triggers, your product's disqualifiers — are yours to write, and they are why the account list
+ends up ranked the way it does. A set that is mostly prebuilt keys is a sign the ICP work was
+skipped.
+
+When a prebuilt signal does answer the question, mark it in the output as
+`PrebuiltSignal: <key>` in place of `Question:`.
+
+```
+Signal 3 — icp_fit
+  PrebuiltSignal:  tech
+  TechFilter:  --category crm
+  DerivedFrom: icp_constraint
+  ...
+```
+
 ## Signal categories
 
 Generate signals across three categories:
@@ -59,7 +109,8 @@ Tests whether the company shows evidence of the pain point.
 
 ## Signal format
 
-Output each signal in this format:
+Output each signal in this format (use `PrebuiltSignal` instead of `Question` when a
+prebuilt signal key covers the signal — see above):
 
 ```
 Signal {N} — {category}
@@ -132,7 +183,16 @@ Once signals are run against a prospect:
 
 ## Saber CLI — activating signals
 
-Once the signal set is approved, use `create-company-signals` to activate them in Saber:
+Once the signal set is approved, use `create-company-signals` to activate them in Saber.
+
+Prebuilt signals run by key against a domain:
+
+```bash
+saber signal funding --domain acme.com
+saber signal tech --domain acme.com --category crm
+```
+
+Custom signals run as scheduled subscriptions against a list:
 
 ```bash
 saber subscription create \
@@ -143,7 +203,7 @@ saber subscription create \
   --frequency weekly
 ```
 
-Run one `subscription create` command per signal. The signal metadata (weight, category, interpretation rules) should be kept in conversation context — both `configure-scoring` (to materialize the model into native scoring rules) and `score-accounts` (when falling back to client-side ranking) consume it.
+Run one `subscription create` command per custom signal. The signal metadata (weight, category, interpretation rules) should be kept in conversation context — both `configure-scoring` (to materialize the model into native scoring rules) and `score-accounts` (when falling back to client-side ranking) consume it.
 
 ## Materializing the model with native scoring
 
@@ -163,6 +223,9 @@ Default point values: `points = weight × 10`. Disqualifiers go in `fit` with st
 
 Before finalising:
 
+- [ ] The set is driven by the ICP and pain points — **not** shaped around the five prebuilt keys. A set that is mostly prebuilt keys means the ICP work got skipped
+- [ ] Where a signal is *exactly* a commodity fact and carries no threshold, window, filter or judgement, it uses the prebuilt key rather than a duplicate hand-written question
+- [ ] No signal was reshaped or watered down to fit a prebuilt key — if the qualification criteria don't survive, it stays custom
 - [ ] Every urgency signal has an explicit time bound ("in the last 6 months" — not "recently" or "ever")
 - [ ] No `buying_signal` has `isDisqualifier: true`
 - [ ] No `urgency` signal has `isDisqualifier: true`
